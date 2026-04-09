@@ -1,8 +1,15 @@
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/.expo/navigation/type";
 import { useState } from "react";
 
-export function Login() {
+type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+
+type Props = {
+  navigation : LoginScreenNavigationProp;
+}
+export function Login({navigation}: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -55,7 +62,7 @@ export function Login() {
       </TouchableOpacity>
 
       <Text style={styles.footerText}>
-        Don’t have an account? <Text style={styles.signup}>Sign Up</Text>
+        Don’t have an account? <Text style={styles.signup} onPress={() => navigation.navigate('Signup')}>Sign Up</Text>
       </Text>
     </View>
   );
