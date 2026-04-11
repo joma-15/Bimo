@@ -12,7 +12,7 @@ export default function App() {
   return(
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
-        <Stack.Screen name="Signup" component={Signup} options={{title : "Burat"}}/>
+        <Stack.Screen name="Signup" component={Signup} options={{headerShown: false}}/>
       </Stack.Navigator>
   );
 }
