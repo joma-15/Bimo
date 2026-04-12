@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -13,18 +13,16 @@ import { RootStackParamList } from "@/.expo/navigation/type";
 
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { makeRedirectUri } from "expo-auth-session";
-import { useEffect } from "react";
 
-//required for expo so that login flow can return back to app properly
+// Required for auth flow
 WebBrowser.maybeCompleteAuthSession();
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
 };
 
-/* 🎯 Animated Social Button */
-const SocialButton = ({ icon, text }: any) => {
+/* 🎯 Reusable Social Button */
+const SocialButton = ({ icon, text, onPress }: any) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   const pressIn = () => {
@@ -40,6 +38,7 @@ const SocialButton = ({ icon, text }: any) => {
       <TouchableOpacity
         style={styles.socialButton}
         activeOpacity={0.9}
+        onPress={onPress} // ✅ now clickable
         onPressIn={pressIn}
         onPressOut={pressOut}
       >
@@ -56,13 +55,16 @@ export function Login({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // ✅ Google Auth setup (UPDATED)
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId:
+    clientId:
       "201938807441-i97evbdcsc8v09e2p2lqk907a80shbq4.apps.googleusercontent.com",
 
-    redirectUri: makeRedirectUri(),
+    // 🔥 Add this later if you already created it
+    // androidClientId: "YOUR_ANDROID_CLIENT_ID",
   });
 
+  // ✅ Handle Google response
   useEffect(() => {
     console.log("Response:", response);
 
@@ -71,14 +73,16 @@ export function Login({ navigation }: Props) {
 
       console.log("Google token:", token);
 
+      // Navigate after success
       navigation.navigate("MainDash");
     }
   }, [response]);
-  /* ✨ Animation values */
+
+  /* ✨ Animations */
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -94,7 +98,7 @@ export function Login({ navigation }: Props) {
   }, []);
 
   const handleLogin = () => {
-    console.log("Login:", email, password);
+    console.log("Manual Login:", email, password);
   };
 
   return (
@@ -134,29 +138,25 @@ export function Login({ navigation }: Props) {
         secureTextEntry
       />
 
-      {/* LOGIN BUTTON */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          console.log("Pressed");
-          promptAsync();
-        }}
-        disabled={!request}
-      >
+      {/* NORMAL LOGIN */}
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
 
       <Text style={styles.orText}>OR</Text>
 
-      {/* SOCIAL LOGIN */}
+      {/* ✅ GOOGLE LOGIN BUTTON */}
       <SocialButton
         icon={require("../assets/images/google.png")}
         text="Continue with Google"
+        onPress={() => promptAsync()} // 🔥 NOW WORKS HERE
       />
 
+      {/* INSTAGRAM (placeholder) */}
       <SocialButton
         icon={require("../assets/images/instagram.png")}
         text="Continue with Instagram"
+        onPress={() => console.log("Instagram login soon")}
       />
 
       {/* FOOTER */}
