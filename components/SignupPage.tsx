@@ -28,19 +28,24 @@ type Props = {
 
 export function Signup({ navigation }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [birthdate, setBirthdate] = useState("");
 
-  const [date, setDate] = useState(new Date());
+  // 🔥 FIXED: nullable date for placeholder behavior
+  const [date, setDate] = useState<Date | null>(null);
   const [open, setOpen] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(600)).current;
 
   const openModal = () => {
     setModalVisible(true);
+
+    // 🔥 optional reset every open
+    setDate(null);
+
     Animated.spring(slideAnim, {
       toValue: 0,
       useNativeDriver: true,
@@ -57,8 +62,13 @@ export function Signup({ navigation }: Props) {
   };
 
   const handleSignup = () => {
-    console.log("Sign up with:", name, email, password, birthdate);
-    // Registration logic here
+    console.log("Sign up with:", {
+      name,
+      email,
+      password,
+      birthdate: date,
+    });
+
     closeModal();
   };
 
@@ -72,7 +82,6 @@ export function Signup({ navigation }: Props) {
       <Text style={styles.title}>Join Bimo!</Text>
       <Text style={styles.subtitle}>Your next spark is one step away 💘</Text>
 
-      {/* Opens the modal form */}
       <TouchableOpacity style={styles.button} onPress={openModal}>
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
@@ -82,6 +91,7 @@ export function Signup({ navigation }: Props) {
       <TouchableOpacity style={styles.socialButton}>
         <Text style={styles.socialText}>Continue with Google</Text>
       </TouchableOpacity>
+
       <TouchableOpacity style={styles.socialButton}>
         <Text style={styles.socialText}>Continue with Instagram</Text>
       </TouchableOpacity>
@@ -96,20 +106,18 @@ export function Signup({ navigation }: Props) {
         </Text>
       </Text>
 
-      {/* Bottom sheet modal */}
+      {/* MODAL */}
       <Modal
         transparent
         visible={modalVisible}
         animationType="none"
         onRequestClose={closeModal}
       >
-        {/* Dimmed backdrop — tapping closes the sheet */}
         <Pressable style={styles.backdrop} onPress={closeModal} />
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardView}
-          pointerEvents="box-none"
         >
           <Animated.View
             style={[
@@ -117,7 +125,6 @@ export function Signup({ navigation }: Props) {
               { transform: [{ translateY: slideAnim }] },
             ]}
           >
-            {/* Drag handle pill */}
             <View style={styles.handle} />
 
             <Text style={styles.modalTitle}>Create Your Account</Text>
@@ -136,29 +143,29 @@ export function Signup({ navigation }: Props) {
                 onChangeText={setName}
                 style={styles.input}
                 placeholderTextColor="#999"
-                autoCapitalize="words"
               />
+
               <TextInput
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
                 style={styles.input}
-                keyboardType="email-address"
                 placeholderTextColor="#999"
-                autoCapitalize="none"
               />
-              {/* <TextInput
-                placeholder="Date of Birth (MM/DD/YYYY)"
-                value={birthdate}
-                onChangeText={setBirthdate}
-                style={styles.input}
-                placeholderTextColor="#999"
-                keyboardType="numbers-and-punctuation"
-              /> */}
 
+              {/* 🔥 BIRTHDATE FIELD */}
               <Pressable onPress={() => setOpen(true)}>
                 <TextInput
-                  value={date.toLocaleDateString()}
+                  value={
+                    date
+                      ? date.toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : ""
+                  }
+                  placeholder="Select Birthdate"
                   editable={false}
                   pointerEvents="none"
                   style={styles.input}
@@ -167,12 +174,14 @@ export function Signup({ navigation }: Props) {
 
               {open && (
                 <DateTimePicker
-                  value={date}
+                  value={date ?? new Date()}
                   mode="date"
                   display="default"
                   onChange={(event, selectedDate) => {
                     setOpen(false);
-                    if (selectedDate) setDate(selectedDate);
+                    if (selectedDate) {
+                      setDate(selectedDate);
+                    }
                   }}
                 />
               )}
@@ -182,23 +191,18 @@ export function Signup({ navigation }: Props) {
                 value={password}
                 onChangeText={setPassword}
                 style={styles.input}
-                placeholderTextColor="#999"
                 secureTextEntry
+                placeholderTextColor="#999"
               />
+
               <TextInput
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 style={styles.input}
-                placeholderTextColor="#999"
                 secureTextEntry
+                placeholderTextColor="#999"
               />
-
-              <Text style={styles.termsText}>
-                By signing up, you agree to our{" "}
-                <Text style={styles.termsLink}>Terms of Service</Text> &{" "}
-                <Text style={styles.termsLink}>Privacy Policy</Text>
-              </Text>
 
               <TouchableOpacity
                 style={styles.modalButton}
