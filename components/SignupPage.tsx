@@ -66,7 +66,8 @@ export function Signup({ navigation }: Props) {
       birthdate: date,
     });
 
-    closeModal();
+    // closeModal();
+    navigation.navigate('MainDash')
   };
 
   return (
@@ -114,7 +115,7 @@ export function Signup({ navigation }: Props) {
         Already have an account?{" "}
         <Text
           style={styles.loginLink}
-          onPress={() => navigation.navigate("MainDash")}
+          onPress={() => navigation.navigate("Login")}
         >
           Log In
         </Text>

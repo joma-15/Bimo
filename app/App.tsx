@@ -14,7 +14,7 @@ export default function App() {
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={Login} options={{headerShown: false}}/>
         <Stack.Screen name="Signup" component={Signup} options={{headerShown: false}}/>
-        <Stack.Screen name="MainDash" component={MainDash} options={{headerShown: false}}/>
+        <Stack.Screen name="MainDash" component={MainDash} options={{title : "dashboard"}}/>
       </Stack.Navigator>
   );
 }
