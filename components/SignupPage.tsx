@@ -15,8 +15,12 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/.expo/navigation/type";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-type SignupScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Signup">;
+type SignupScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Signup"
+>;
 
 type Props = {
   navigation: SignupScreenNavigationProp;
@@ -29,6 +33,9 @@ export function Signup({ navigation }: Props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [birthdate, setBirthdate] = useState("");
+
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(600)).current;
 
@@ -58,7 +65,10 @@ export function Signup({ navigation }: Props) {
   return (
     <View style={styles.container}>
       {/* Main screen */}
-      <Image source={require("../assets/images/char.png")} style={styles.logo} />
+      <Image
+        source={require("../assets/images/char.png")}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Join Bimo!</Text>
       <Text style={styles.subtitle}>Your next spark is one step away 💘</Text>
 
@@ -78,13 +88,21 @@ export function Signup({ navigation }: Props) {
 
       <Text style={styles.footerText}>
         Already have an account?{" "}
-        <Text style={styles.loginLink} onPress={() => navigation.navigate("Login")}>
+        <Text
+          style={styles.loginLink}
+          onPress={() => navigation.navigate("Login")}
+        >
           Log In
         </Text>
       </Text>
 
       {/* Bottom sheet modal */}
-      <Modal transparent visible={modalVisible} animationType="none" onRequestClose={closeModal}>
+      <Modal
+        transparent
+        visible={modalVisible}
+        animationType="none"
+        onRequestClose={closeModal}
+      >
         {/* Dimmed backdrop — tapping closes the sheet */}
         <Pressable style={styles.backdrop} onPress={closeModal} />
 
@@ -94,13 +112,18 @@ export function Signup({ navigation }: Props) {
           pointerEvents="box-none"
         >
           <Animated.View
-            style={[styles.modalSheet, { transform: [{ translateY: slideAnim }] }]}
+            style={[
+              styles.modalSheet,
+              { transform: [{ translateY: slideAnim }] },
+            ]}
           >
             {/* Drag handle pill */}
             <View style={styles.handle} />
 
             <Text style={styles.modalTitle}>Create Your Account</Text>
-            <Text style={styles.modalSubtitle}>Fill in your details below ✨</Text>
+            <Text style={styles.modalSubtitle}>
+              Fill in your details below ✨
+            </Text>
 
             <ScrollView
               showsVerticalScrollIndicator={false}
@@ -124,14 +147,36 @@ export function Signup({ navigation }: Props) {
                 placeholderTextColor="#999"
                 autoCapitalize="none"
               />
-              <TextInput
+              {/* <TextInput
                 placeholder="Date of Birth (MM/DD/YYYY)"
                 value={birthdate}
                 onChangeText={setBirthdate}
                 style={styles.input}
                 placeholderTextColor="#999"
                 keyboardType="numbers-and-punctuation"
-              />
+              /> */}
+
+              <Pressable onPress={() => setOpen(true)}>
+                <TextInput
+                  value={date.toLocaleDateString()}
+                  editable={false}
+                  pointerEvents="none"
+                  style={styles.input}
+                />
+              </Pressable>
+
+              {open && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setOpen(false);
+                    if (selectedDate) setDate(selectedDate);
+                  }}
+                />
+              )}
+
               <TextInput
                 placeholder="Password"
                 value={password}
@@ -155,11 +200,17 @@ export function Signup({ navigation }: Props) {
                 <Text style={styles.termsLink}>Privacy Policy</Text>
               </Text>
 
-              <TouchableOpacity style={styles.modalButton} onPress={handleSignup}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleSignup}
+              >
                 <Text style={styles.modalButtonText}>Create Account</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.cancelButton} onPress={closeModal}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={closeModal}
+              >
                 <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
             </ScrollView>
