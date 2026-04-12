@@ -11,6 +11,14 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/.expo/navigation/type";
 
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { makeRedirectUri } from "expo-auth-session";
+import { useEffect } from "react";
+
+//required for expo so that login flow can return back to app properly
+WebBrowser.maybeCompleteAuthSession();
+
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
 };
@@ -48,6 +56,24 @@ export function Login({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId:
+      "201938807441-i97evbdcsc8v09e2p2lqk907a80shbq4.apps.googleusercontent.com",
+
+    redirectUri: makeRedirectUri(),
+  });
+
+  useEffect(() => {
+    console.log("Response:", response);
+
+    if (response?.type === "success") {
+      const token = response.authentication?.accessToken;
+
+      console.log("Google token:", token);
+
+      navigation.navigate("MainDash");
+    }
+  }, [response]);
   /* ✨ Animation values */
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -109,7 +135,14 @@ export function Login({ navigation }: Props) {
       />
 
       {/* LOGIN BUTTON */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          console.log("Pressed");
+          promptAsync();
+        }}
+        disabled={!request}
+      >
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
 
