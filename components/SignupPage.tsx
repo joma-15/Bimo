@@ -34,7 +34,6 @@ export function Signup({ navigation }: Props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // 🔥 FIXED: nullable date for placeholder behavior
   const [date, setDate] = useState<Date | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -42,8 +41,6 @@ export function Signup({ navigation }: Props) {
 
   const openModal = () => {
     setModalVisible(true);
-
-    // 🔥 optional reset every open
     setDate(null);
 
     Animated.spring(slideAnim, {
@@ -79,6 +76,7 @@ export function Signup({ navigation }: Props) {
         source={require("../assets/images/char.png")}
         style={styles.logo}
       />
+
       <Text style={styles.title}>Join Bimo!</Text>
       <Text style={styles.subtitle}>Your next spark is one step away 💘</Text>
 
@@ -88,12 +86,28 @@ export function Signup({ navigation }: Props) {
 
       <Text style={styles.orText}>OR</Text>
 
+      {/* GOOGLE */}
       <TouchableOpacity style={styles.socialButton}>
-        <Text style={styles.socialText}>Continue with Google</Text>
+        <View style={styles.socialContent}>
+          <Image
+            source={require("../assets/images/google.png")}
+            style={styles.socialIcon}
+            resizeMode="contain"
+          />
+          <Text style={styles.socialText}>Continue with Google</Text>
+        </View>
       </TouchableOpacity>
 
+      {/* INSTAGRAM */}
       <TouchableOpacity style={styles.socialButton}>
-        <Text style={styles.socialText}>Continue with Instagram</Text>
+        <View style={styles.socialContent}>
+          <Image
+            source={require("../assets/images/instagram.png")}
+            style={styles.socialIcon}
+            resizeMode="contain"
+          />
+          <Text style={styles.socialText}>Continue with Instagram</Text>
+        </View>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>
@@ -153,7 +167,6 @@ export function Signup({ navigation }: Props) {
                 placeholderTextColor="#999"
               />
 
-              {/* 🔥 BIRTHDATE FIELD */}
               <Pressable onPress={() => setOpen(true)}>
                 <TextInput
                   value={
@@ -167,7 +180,6 @@ export function Signup({ navigation }: Props) {
                   }
                   placeholder="Select Birthdate"
                   editable={false}
-                  pointerEvents="none"
                   style={styles.input}
                 />
               </Pressable>
@@ -179,9 +191,7 @@ export function Signup({ navigation }: Props) {
                   display="default"
                   onChange={(event, selectedDate) => {
                     setOpen(false);
-                    if (selectedDate) {
-                      setDate(selectedDate);
-                    }
+                    if (selectedDate) setDate(selectedDate);
                   }}
                 />
               )}
@@ -226,7 +236,6 @@ export function Signup({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  // --- Main screen ---
   container: {
     flex: 1,
     backgroundColor: "#E8E8E2",
@@ -235,21 +244,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 60,
   },
+
   logo: {
     width: 120,
     height: 120,
     marginBottom: 20,
   },
+
   title: {
     fontSize: 28,
     fontWeight: "700",
     color: "#101828",
   },
+
   subtitle: {
     fontSize: 16,
     color: "#667085",
     marginBottom: 30,
   },
+
   button: {
     backgroundColor: "#C7FF01",
     paddingVertical: 15,
@@ -260,16 +273,19 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 2,
   },
+
   buttonText: {
     color: "#020101",
     fontSize: 18,
     fontWeight: "600",
   },
+
   orText: {
     marginVertical: 15,
     fontSize: 14,
     color: "#667085",
   },
+
   socialButton: {
     borderWidth: 1,
     borderColor: "black",
@@ -280,29 +296,44 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#FFFFFF",
   },
+
+  socialContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  socialIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 10,
+  },
+
   socialText: {
     color: "#344054",
     fontWeight: "500",
   },
+
   footerText: {
     marginTop: 20,
     color: "black",
   },
+
   loginLink: {
     fontWeight: "600",
     color: "#4F46E5",
   },
 
-  // --- Modal / bottom sheet ---
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.45)",
   },
+
   keyboardView: {
     flex: 1,
     justifyContent: "flex-end",
-    pointerEvents: "box-none",
   },
+
   modalSheet: {
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 28,
@@ -311,11 +342,10 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 40,
     maxHeight: "88%",
-    borderTopWidth: 2,
-    borderLeftWidth: 2,
-    borderRightWidth: 2,
+    borderWidth: 2,
     borderColor: "black",
   },
+
   handle: {
     width: 40,
     height: 4,
@@ -324,20 +354,23 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 20,
   },
+
   modalTitle: {
     fontSize: 22,
     fontWeight: "700",
     color: "#101828",
-    marginBottom: 4,
   },
+
   modalSubtitle: {
     fontSize: 14,
     color: "#667085",
     marginBottom: 20,
   },
+
   scrollContent: {
     paddingBottom: 20,
   },
+
   input: {
     backgroundColor: "#F9F9F9",
     padding: 15,
@@ -346,45 +379,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 2,
     borderColor: "black",
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-    color: "#101828",
   },
-  termsText: {
-    fontSize: 12,
-    color: "#667085",
-    textAlign: "center",
-    marginBottom: 16,
-    paddingHorizontal: 10,
-  },
-  termsLink: {
-    color: "#4F46E5",
-    fontWeight: "600",
-  },
+
   modalButton: {
     backgroundColor: "#C7FF01",
     paddingVertical: 15,
-    width: "100%",
     borderRadius: 12,
     alignItems: "center",
-    borderColor: "black",
     borderWidth: 2,
+    borderColor: "black",
     marginBottom: 10,
   },
+
   modalButtonText: {
-    color: "#020101",
     fontSize: 18,
     fontWeight: "600",
   },
+
   cancelButton: {
     paddingVertical: 12,
     alignItems: "center",
   },
+
   cancelText: {
     color: "#667085",
     fontSize: 15,
-    fontWeight: "500",
   },
 });

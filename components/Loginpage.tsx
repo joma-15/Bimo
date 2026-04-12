@@ -1,155 +1,238 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from "react-native";
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Animated,
+} from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/.expo/navigation/type";
-import { useState } from "react";
-
-type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
 type Props = {
-  navigation : LoginScreenNavigationProp;
-}
-export function Login({navigation}: Props) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
+};
 
-  const handleLogin = () => {
-    console.log("Login with:", email, password);
-    // Authentication logic here
+/* 🎯 Animated Social Button */
+const SocialButton = ({ icon, text }: any) => {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const pressIn = () => {
+    Animated.spring(scale, { toValue: 0.96, useNativeDriver: true }).start();
+  };
+
+  const pressOut = () => {
+    Animated.spring(scale, { toValue: 1, useNativeDriver: true }).start();
   };
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={{ transform: [{ scale }] }}>
+      <TouchableOpacity
+        style={styles.socialButton}
+        activeOpacity={0.9}
+        onPressIn={pressIn}
+        onPressOut={pressOut}
+      >
+        <View style={styles.socialContent}>
+          <Image source={icon} style={styles.socialIcon} resizeMode="contain" />
+          <Text style={styles.socialText}>{text}</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
+
+export function Login({ navigation }: Props) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  /* ✨ Animation values */
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+
+  React.useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 6,
+      }),
+    ]).start();
+  }, []);
+
+  const handleLogin = () => {
+    console.log("Login:", email, password);
+  };
+
+  return (
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          opacity: fadeAnim,
+          transform: [{ scale: scaleAnim }],
+        },
+      ]}
+    >
+      {/* LOGO */}
       <Image
-        source={{ uri: "https://i.ibb.co/3mYh7K6/bimo-cartoon-logo.png" }} // placeholder logo
+        source={require("../assets/images/char.png")}
         style={styles.logo}
       />
-      <Image source={require("../assets/images/char.png")} style={styles.logo}/>
-      <Text style={styles.title}>Welcome to Bimo!</Text>
-      <Text style={styles.subtitle}>Find your match in a fun way 💖</Text>
 
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          keyboardType="email-address"
-          placeholderTextColor={'black'}
-          autoCapitalize="none"
-        />
-        <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          style={styles.input}
-          placeholderTextColor={'black'}
-          secureTextEntry
-        />
-      </View>
+      <Text style={styles.title}>Welcome Back 👋</Text>
+      <Text style={styles.subtitle}>Login to continue your journey</Text>
 
+      {/* INPUTS */}
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        style={styles.input}
+        secureTextEntry
+      />
+
+      {/* LOGIN BUTTON */}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
 
       <Text style={styles.orText}>OR</Text>
 
-      <TouchableOpacity style={styles.socialButton}>
-        <Text style={styles.socialText}>Continue with Google</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.socialButton}>
-        <Text style={styles.socialText}>Continue with Instagram</Text>
-      </TouchableOpacity>
+      {/* SOCIAL LOGIN */}
+      <SocialButton
+        icon={require("../assets/images/google.png")}
+        text="Continue with Google"
+      />
 
+      <SocialButton
+        icon={require("../assets/images/instagram.png")}
+        text="Continue with Instagram"
+      />
+
+      {/* FOOTER */}
       <Text style={styles.footerText}>
-        Don’t have an account? <Text style={styles.signup} onPress={() => navigation.navigate('Signup')}>Sign Up</Text>
+        Don’t have an account?{" "}
+        <Text
+          style={styles.signup}
+          onPress={() => navigation.navigate("Signup")}
+        >
+          Sign Up
+        </Text>
       </Text>
-    </View>
+    </Animated.View>
   );
 }
 
+/* 🎨 STYLES */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E8E8E2ff", // soft off-white background
+    backgroundColor: "#E8E8E2",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 170,
+    padding: 20,
   },
+
   logo: {
     width: 120,
     height: 120,
-    marginBottom: 20,
+    marginBottom: 15,
   },
+
   title: {
     fontSize: 28,
-    fontWeight: "700",
-    color: "#101828", // dark blue/gray
+    fontWeight: "800",
+    color: "#111",
   },
+
   subtitle: {
-    fontSize: 16,
-    color: "#667085", // muted gray-blue
-    marginBottom: 30,
-  },
-  inputContainer: {
-    width: "100%",
+    fontSize: 15,
+    color: "#666",
+    marginBottom: 20,
   },
 
   input: {
-    backgroundColor: "#FFFFFF", // white input
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 15,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#E4E7EC", // light gray border
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-    
-  },
-  button: {
-    backgroundColor: "#C7FF01ff", // vibrant purple-blue
-    paddingVertical: 15,
     width: "100%",
-    borderRadius: 12,
-    marginTop: 10,
-    alignItems: "center",
-    borderColor: 'black', 
     borderWidth: 2,
+    borderColor: "#000",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+    backgroundColor: "#fff",
   },
+
+  button: {
+    width: "100%",
+    backgroundColor: "#C7FF01",
+    padding: 15,
+    borderRadius: 14,
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#000",
+    marginTop: 5,
+  },
+
   buttonText: {
-    color: "#020101",
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "800",
   },
+
   orText: {
     marginVertical: 15,
-    fontSize: 14,
-    color: "#667085",
+    color: "#777",
   },
+
   socialButton: {
-    borderWidth: 1,
-    borderColor: "black",
-    paddingVertical: 12,
-    borderRadius: 12,
     width: "100%",
-    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: "#000",
     marginBottom: 10,
-    backgroundColor: "#FFFFFF",
   },
+
+  socialContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  socialIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 10,
+  },
+
   socialText: {
-    color: "#344054", // dark gray-blue
-    fontWeight: "500",
+    fontWeight: "600",
+    color: "#333",
   },
+
   footerText: {
     marginTop: 20,
-    color: "black",
+    color: "#333",
   },
+
   signup: {
-    fontWeight: "600",
-    color: "#4F46E5", // purple accent
+    color: "#4F46E5",
+    fontWeight: "700",
   },
 });
