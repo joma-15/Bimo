@@ -8,8 +8,8 @@ type Props = {
 
 export function MainDash({ navigation }: Props){
     return(
-        <View>
-            <Text>Next ka na ngani</Text>
+        <View style={{ flex: 1, backgroundColor: "#E8E8E2", justifyContent: "center", alignItems: "center" }}>
+            <Text style={{color : "red"}}>Putang ina main dashboard na</Text>
         </View>
     )
 }
