@@ -114,7 +114,7 @@ export function Signup({ navigation }: Props) {
         Already have an account?{" "}
         <Text
           style={styles.loginLink}
-          onPress={() => navigation.navigate("Login")}
+          onPress={() => navigation.navigate("MainDash")}
         >
           Log In
         </Text>
