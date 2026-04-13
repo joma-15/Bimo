@@ -99,6 +99,8 @@ export function Login({ navigation }: Props) {
 
   const handleLogin = () => {
     console.log("Manual Login:", email, password);
+    console.log('clickable')
+    navigation.navigate('MainDash');
   };
 
   return (
