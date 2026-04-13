@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,13 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/.expo/navigation/type";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { ResponseError } from "expo-auth-session/build/Errors";
+
+//required for auth flow
+WebBrowser.maybeCompleteAuthSession();
 
 type SignupScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -38,6 +45,19 @@ export function Signup({ navigation }: Props) {
   const [open, setOpen] = useState(false);
 
   const slideAnim = useRef(new Animated.Value(600)).current;
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId:
+      "201938807441-i97evbdcsc8v09e2p2lqk907a80shbq4.apps.googleusercontent.com",
+  });
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const token = response.authentication?.accessToken;
+
+      navigation.navigate("MainDash");
+    }
+  }, [response]);
 
   const openModal = () => {
     setModalVisible(true);
@@ -67,7 +87,7 @@ export function Signup({ navigation }: Props) {
     });
 
     // closeModal();
-    navigation.navigate('MainDash')
+    navigation.navigate("MainDash");
   };
 
   return (
@@ -88,7 +108,10 @@ export function Signup({ navigation }: Props) {
       <Text style={styles.orText}>OR</Text>
 
       {/* GOOGLE */}
-      <TouchableOpacity style={styles.socialButton}>
+      <TouchableOpacity
+        style={styles.socialButton}
+        onPress={() => promptAsync()}
+      >
         <View style={styles.socialContent}>
           <Image
             source={require("../assets/images/google.png")}
