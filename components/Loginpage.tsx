@@ -12,7 +12,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/.expo/navigation/type";
 
 import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
+import { useGoogleAuth } from "@/services/googleAuth";
+// import * as Google from "expo-auth-session/providers/google";
+// import { useGoogleAuth } from "@/services/googleAuth";
 
 // Required for auth flow
 WebBrowser.maybeCompleteAuthSession();
@@ -54,29 +56,30 @@ const SocialButton = ({ icon, text, onPress }: any) => {
 export function Login({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const {promptAsync} = useGoogleAuth();
 
   // ✅ Google Auth setup (UPDATED)
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId:
-      "201938807441-i97evbdcsc8v09e2p2lqk907a80shbq4.apps.googleusercontent.com",
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   clientId:
+  //     "201938807441-i97evbdcsc8v09e2p2lqk907a80shbq4.apps.googleusercontent.com",
 
-    // 🔥 Add this later if you already created it
-    // androidClientId: "YOUR_ANDROID_CLIENT_ID",
-  });
+  //   // 🔥 Add this later if you already created it
+  //   // androidClientId: "YOUR_ANDROID_CLIENT_ID",
+  // });
 
   // ✅ Handle Google response
-  useEffect(() => {
-    console.log("Response:", response);
+  // useEffect(() => {
+  //   console.log("Response:", response);
 
-    if (response?.type === "success") {
-      const token = response.authentication?.accessToken;
+  //   if (response?.type === "success") {
+  //     const token = response.authentication?.accessToken;
 
-      console.log("Google token:", token);
+  //     console.log("Google token:", token);
 
-      // Navigate after success
-      navigation.navigate("MainDash");
-    }
-  }, [response]);
+  //     // Navigate after success
+  //     navigation.navigate("MainDash");
+  //   }
+  // }, [response]);
 
   /* ✨ Animations */
   const fadeAnim = useRef(new Animated.Value(0)).current;
